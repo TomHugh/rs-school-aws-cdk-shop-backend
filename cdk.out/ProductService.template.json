@@ -1,0 +1,355 @@
+{
+ "Resources": {
+  "GetProductsListLambdaServiceRole07D1CCC1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProductService/GetProductsListLambda/ServiceRole/Resource"
+   }
+  },
+  "GetProductsListLambdaC5169546": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-585154451279-us-east-1",
+     "S3Key": "0dba22446699e3db6ed2340f99de98ad0df70d4c544ba352e0ec95e421dc608f.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "GetProductsListLambdaServiceRole07D1CCC1",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": "getProductsList",
+    "Handler": "index.handler",
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "GetProductsListLambdaServiceRole07D1CCC1"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ProductService/GetProductsListLambda/Resource",
+    "aws:asset:path": "asset.0dba22446699e3db6ed2340f99de98ad0df70d4c544ba352e0ec95e421dc608f",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "GetProductByIdLambdaServiceRoleE1FC5E1E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProductService/GetProductByIdLambda/ServiceRole/Resource"
+   }
+  },
+  "GetProductByIdLambda4D2EE684": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-585154451279-us-east-1",
+     "S3Key": "87b626d6944483561f4c7b7c680e80583ca20caea73a33439fac3478b286458b.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "GetProductByIdLambdaServiceRoleE1FC5E1E",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": "getProductById",
+    "Handler": "index.handler",
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "GetProductByIdLambdaServiceRoleE1FC5E1E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ProductService/GetProductByIdLambda/Resource",
+    "aws:asset:path": "asset.87b626d6944483561f4c7b7c680e80583ca20caea73a33439fac3478b286458b",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "ProductApi63AD160A": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "CorsConfiguration": {
+     "AllowHeaders": [
+      "*"
+     ],
+     "AllowMethods": [
+      "*"
+     ],
+     "AllowOrigins": [
+      "*"
+     ]
+    },
+    "Name": "ProductApi",
+    "ProtocolType": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProductService/ProductApi/Resource"
+   }
+  },
+  "ProductApiDefaultStage36F65E09": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ProductApi63AD160A"
+    },
+    "StageName": "$default",
+    "AutoDeploy": true
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProductService/ProductApi/DefaultStage/Resource"
+   }
+  },
+  "ProductApiGETproductsGetProductsListIntegrationD247604E": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ProductApi63AD160A"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "GetProductsListLambdaC5169546",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProductService/ProductApi/GET--products/GetProductsListIntegration/Resource"
+   }
+  },
+  "ProductApiGETproductsGetProductsListIntegrationPermissionBD0C0A3D": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "GetProductsListLambdaC5169546",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:585154451279:",
+       {
+        "Ref": "ProductApi63AD160A"
+       },
+       "/*/*/products"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProductService/ProductApi/GET--products/GetProductsListIntegration-Permission"
+   }
+  },
+  "ProductApiGETproductsB5223DF4": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ProductApi63AD160A"
+    },
+    "RouteKey": "GET /products",
+    "AuthorizationType": "NONE",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ProductApiGETproductsGetProductsListIntegrationD247604E"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProductService/ProductApi/GET--products/Resource"
+   }
+  },
+  "ProductApiGETproductsidGetProductsListIntegration1A27F959": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ProductApi63AD160A"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "GetProductByIdLambda4D2EE684",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProductService/ProductApi/GET--products--{id}/GetProductsListIntegration/Resource"
+   }
+  },
+  "ProductApiGETproductsidGetProductsListIntegrationPermission7A36AC34": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "GetProductByIdLambda4D2EE684",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:585154451279:",
+       {
+        "Ref": "ProductApi63AD160A"
+       },
+       "/*/*/products/{id}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProductService/ProductApi/GET--products--{id}/GetProductsListIntegration-Permission"
+   }
+  },
+  "ProductApiGETproductsidBB9CD646": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ProductApi63AD160A"
+    },
+    "RouteKey": "GET /products/{id}",
+    "AuthorizationType": "NONE",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ProductApiGETproductsidGetProductsListIntegration1A27F959"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProductService/ProductApi/GET--products--{id}/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02Q3U7DMAyFn2X3qdcVIe2SDQnBDULlASovNSX9Sao62YSivDtJWtCuju2cnM9JBccKfLnDGxeyHYpRXcB/WpSDiKPGjzhdWmy0aalneM/y4rS0ymihcAJfm5HE85dOGgQ/NMhMluGUJPZwdnIge0YmsaaBj/b/kFh/0DIp5tgFgbPq0NINf65VNp5mlTxxpy5z3rSlbsG/u7VxlkIQNbFxiySRucmtdJcN20EQZYHj/I1Q7p625+6T3hM3h3+1dk7gpCs5VZmVq7slIjv9DvS8vx6OcHiM+T0rVSxOWzUR1Kv+AqPK0F9qAQAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProductService/CDKMetadata/Default"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

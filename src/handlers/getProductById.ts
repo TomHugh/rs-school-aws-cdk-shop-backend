@@ -35,12 +35,11 @@ const selectById = async (event: any) => {
 
 export const handler = async (event: any) => {
     try {
-      console.log(event);
         return selectById(event);
     } catch (err) {
       console.log(err);
         return buildResponse(500, {
-            event,
+          message: err.message,
         });
     }
 };

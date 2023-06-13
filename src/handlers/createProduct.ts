@@ -4,8 +4,9 @@ import { BatchWriteItemCommand, DynamoDBClient } from "@aws-sdk/client-dynamodb"
 
 const client = new DynamoDBClient({region: "us-east-1"});
 
-const createProduct = async (title: string, description: string, price: number, count: number ) => {
+const createProduct = async (event: any ) => {
     const id = uuidv4();
+    const body = JSON.parse(event.body);
     const command = new BatchWriteItemCommand({
       RequestItems: {
         Products: [
@@ -13,9 +14,9 @@ const createProduct = async (title: string, description: string, price: number, 
             PutRequest: {
               Item: {
                 id: { S: id },
-                title: { S: title },
-                description: { S: description},
-                price: { N: price},
+                title: { S: body.title },
+                description: { S: body.description},
+                price: { N: body.price},
               },
             },
           },
@@ -25,7 +26,7 @@ const createProduct = async (title: string, description: string, price: number, 
             PutRequest: {
                 Item: {
                     id: { S: id },
-                    count: { N: count },
+                    count: { N: body.count },
                 },
             },
         },
@@ -40,7 +41,7 @@ const createProduct = async (title: string, description: string, price: number, 
 
 export const handler = async (event: any) => {
     try {
-        return createProduct(event.title, event.description, event.price, event.count); //todo: build custom response
+        return createProduct(event); //todo: build custom response
     } catch (err) {
         return buildResponse(500, {
             message: err.message,

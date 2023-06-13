@@ -1,9 +1,7 @@
 import { buildResponse } from '../utils';
 import { BatchGetItemCommand, DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
 const client = new DynamoDBClient({region: "us-east-1"});
-const dynamodb = DynamoDBDocumentClient.from(client);
 
 const selectById = async (event: any) => {
     const command = new BatchGetItemCommand({
@@ -27,7 +25,7 @@ const selectById = async (event: any) => {
             }
           },
         });
-      const response = await dynamodb.send(command);
+      const response = await client.send(command);
       const product = {...response.Responses.Products[0], ...response.Responses.Stocks[0] };
       return product;
 };

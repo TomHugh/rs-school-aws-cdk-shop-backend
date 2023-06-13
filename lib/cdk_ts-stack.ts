@@ -27,10 +27,10 @@ export class CdkTsStack extends cdk.Stack {
       entry: 'src/handlers/getProductById.ts'
     });
 
-    const putProduct = new NodejsFunction(this, 'PutProductLambda', {
+    const createProduct = new NodejsFunction(this, 'createProductLambda', {
       ...sharedLambdaProps,
-      functionName: 'putProduct',
-      entry: 'src/handlers/putProduct.ts'
+      functionName: 'createProduct',
+      entry: 'src/handlers/createProduct.ts'
     });
 
     const api = new apiGateway.HttpApi(this, 'ProductApi', {
@@ -54,7 +54,7 @@ export class CdkTsStack extends cdk.Stack {
     });
 
     api.addRoutes({
-      integration: new HttpLambdaIntegration('PutProductIntegration', putProduct),
+      integration: new HttpLambdaIntegration('createProductIntegration', createProduct),
       path: '/products',
       methods: [apiGateway.HttpMethod.POST],
     });

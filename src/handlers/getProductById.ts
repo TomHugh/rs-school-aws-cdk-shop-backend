@@ -1,34 +1,32 @@
+import { DynamoDBDocumentClient, BatchGetCommand } from '@aws-sdk/lib-dynamodb';
 import { buildResponse } from '../utils';
-import { BatchGetItemCommand, DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 
 const client = new DynamoDBClient({region: "us-east-1"});
+const docClient = DynamoDBDocumentClient.from(client);
 
 const selectById = async (event: any) => {
   
   const id = event.pathParameters.id;
-  console.log(id);
-    const command = new BatchGetItemCommand({
+    const command = new BatchGetCommand({
         RequestItems: {
             Products: {
               Keys: [
                 {
-                  id: { S: id },
+                  id: id,
                 },
               ],
-              ProjectionExpression: "id, title, description, price",
             },
             Stocks: {
                 Keys: [
                     {
-                        id: { S: id },
+                        id: id,
                     },
                 ],
-                ProjectionExpression: "#c",
-                ExpressionAttributeNames: {"#c": "count"},
             }
           },
         });
-      const response = await client.send(command);
+      const response = await docClient.send(command);
       const product = {...response.Responses.Products[0], ...response.Responses.Stocks[0] };
       return product;
 };

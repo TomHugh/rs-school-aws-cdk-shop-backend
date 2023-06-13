@@ -1,7 +1,9 @@
+import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
 import { buildResponse } from '../utils';
-import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 
 const client = new DynamoDBClient({region: "us-east-1"});
+const docClient = DynamoDBDocumentClient.from(client);
 
 const selectAll = async () => {
     const command1 = new ScanCommand({
@@ -10,8 +12,8 @@ const selectAll = async () => {
     const command2 = new ScanCommand({
         TableName: "Stocks",
     })
-      const response1 = await client.send(command1);
-      const response2 = await client.send(command2);
+      const response1 = await docClient.send(command1);
+      const response2 = await docClient.send(command2);
       const products = [];
       
       response1.Items.forEach( (el, idx) => {

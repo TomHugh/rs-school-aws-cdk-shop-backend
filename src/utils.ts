@@ -13,7 +13,7 @@ export const buildResponse = (statusCode, body) => ({
 
 export const checkBodyParameters = (requiredParameters, data) => {
     return requiredParameters.every((parameter) => {
-        const paarameterValue = get(data, parameter);
+        const parameterValue = get(data, parameter);
 
         if (isUndefined(parameterValue)) {
             return false;

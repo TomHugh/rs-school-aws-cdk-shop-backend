@@ -25,6 +25,7 @@ const selectAll = async () => {
 };
 
 export const handler = async (event: any) => {
+    console.info("EVENT\n" + JSON.stringify(event, null, 2));
     try {
         return selectAll();
     } catch (err) {

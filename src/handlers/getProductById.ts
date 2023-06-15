@@ -32,10 +32,10 @@ const selectById = async (event: any) => {
 };
 
 export const handler = async (event: any) => {
-    try {
+  console.info("EVENT\n" + JSON.stringify(event, null, 2));
+  try {
         return selectById(event);
     } catch (err) {
-      console.log(err);
         return buildResponse(500, {
           message: err.message,
         });

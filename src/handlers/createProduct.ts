@@ -47,7 +47,7 @@ export const handler = async (event: any) => {
           message: `Successfully created product`
         });
     } catch (err) {
-        if (err === "Wrong or empty parameter")
+        if (err.message === "Wrong or empty parameter")
         return buildResponse(400, {
           message : err.message
         });

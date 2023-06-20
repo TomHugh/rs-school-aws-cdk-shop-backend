@@ -15,7 +15,7 @@ export class ImportServiceStack extends cdk.Stack {
       // role: iam.Role.fromRoleArn(this, "DynamoDBLambdaAccess", "arn:aws:iam::585154451279:role/DynamoDBLambdaAccessRole"),
     }
 
-    const bucket = s3.Bucket.fromBucketName(this, "ImportBucket", "rs-school-shop-app-import-service");
+    const bucket = s3.Bucket.fromBucketName(this, "ImportBucket", "rs-school-shop-app-products-files");
 
     const importProductsFile = new NodejsFunction(this, 'ImportProductsFileLambda', {
       ...sharedLambdaProps,

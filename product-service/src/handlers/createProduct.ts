@@ -4,7 +4,7 @@ import { BatchWriteItemCommand, DynamoDBClient } from "@aws-sdk/client-dynamodb"
 
 const client = new DynamoDBClient({region: "us-east-1"});
 
-const createProduct = async (event: any ) => {
+export const createProduct = async (event: any ) => {
     const id = uuidv4();
     const body = JSON.parse(event.body);
     if (body.title == "" || body.price <= 0 || body.count < 0) throw new Error ("Wrong or empty parameter");

@@ -5,12 +5,15 @@ import * as lambda from 'aws-cdk-lib/aws-lambda'
 import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as sns from 'aws-cdk-lib/aws-sns';
+import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
 export class CdkTsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const sharedLambdaProps: Partial<NodejsFunctionProps> = {
+    const sharedLambdaProps: Partial<NodejsFunctionProps> = { ///tu na wideo jest duzo wiecej propsow 21:43
       runtime: lambda.Runtime.NODEJS_18_X,
       role: iam.Role.fromRoleArn(this, "DynamoDBLambdaAccess", "arn:aws:iam::585154451279:role/DynamoDBLambdaAccessRole"),
     }
@@ -32,6 +35,29 @@ export class CdkTsStack extends cdk.Stack {
       functionName: 'createProduct',
       entry: 'src/handlers/createProduct.ts'
     });
+
+    const importQueue = new sqs.Queue(this, 'importQueue', {
+      queueName: 'import-file-queue',
+    });
+
+    const importProductTopic = new sns.Topic(this, 'importProductTopic', {
+      topicName: 'import-product-topic',
+    });
+
+    new sns.Subscription(this, 'StockSubscription', {
+      endpoint: 'sliwinski.nowtec@gmail.com',
+      protocol: sns.SubscriptionProtocol.EMAIL,
+      topic: importProductTopic,
+    });
+
+    const catalogBatchProcess = new NodejsFunction(this, 'CatalogBatchProcessLambda', {
+      ...sharedLambdaProps,
+      functionName: 'catalogBatchProcess',
+      entry: 'src/handlers/catalogBatchProcess.ts',
+    });
+
+    importProductTopic.grantPublish(catalogBatchProcess);
+    catalogBatchProcess.addEventSource(new SqsEventSource(importQueue, { batchSize: 5 }));
 
     const api = new apiGateway.HttpApi(this, 'ProductApi', {
       corsPreflight: {

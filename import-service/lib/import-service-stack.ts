@@ -19,8 +19,7 @@ export class ImportServiceStack extends cdk.Stack {
 
     const bucket = s3.Bucket.fromBucketName(this, "ImportBucket", "rs-school-shop-app-products-files");
 
-    const queue = sqs.Queue.fromQueueArn(this, 'ImportFileQueue', 'arn:aws:sqs:us-east-1:585154451279:import-file-queue'); /// dopisac ARN stworzonego queue
-
+    const queue = sqs.Queue.fromQueueArn(this, 'ImportFileQueue', 'arn:aws:sqs:us-east-1:585154451279:import-file-queue'); 
     const importProductsFile = new NodejsFunction(this, 'ImportProductsFileLambda', {
       ...sharedLambdaProps,
       functionName: 'importProductsFile',
@@ -29,7 +28,7 @@ export class ImportServiceStack extends cdk.Stack {
         IMPORT_AWS_REGION: process.env.IMPORT_AWS_REGION!,
         IMPORT_BUCKET_NAME: bucket.bucketName,
         IMPORT_UPLOADED_PREFIX: process.env.IMPORT_UPLOADED_PREFIX!,
-        IMPORT_SQS_URL: queue.queueUrl, // moze da się to wpisac w tym drugim pliku konfiguracyjneym stacka ts
+        IMPORT_SQS_URL: queue.queueUrl, 
       }
     });
 
@@ -42,7 +41,7 @@ export class ImportServiceStack extends cdk.Stack {
       environment: {
         IMPORT_BUCKET_NAME: process.env.IMPORT_BUCKET_NAME!,
         IMPORT_UPLOADED_PREFIX: process.env.IMPORT_UPLOADED_PREFIX!,
-        IMPORT_SQS_URL: queue.queueUrl, // moze da się to wpisac w tym drugim pliku konfiguracyjneym stacka ts 10:52 filmik
+        IMPORT_SQS_URL: queue.queueUrl, 
       }
     });
 
@@ -69,14 +68,6 @@ export class ImportServiceStack extends cdk.Stack {
       path: '/import',
       methods: [apiGateway.HttpMethod.GET],
     });
-
-    // api.addRoutes({
-    //   integration: new HttpLambdaIntegration('GetProductsListIntegration', getProductById),
-    //   path: '/products/{id}',
-    //   methods: [apiGateway.HttpMethod.GET],
-    // });
-
-    
   }
 }
 

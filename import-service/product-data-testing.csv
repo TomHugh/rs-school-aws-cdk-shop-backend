@@ -1,4 +1,7 @@
-title;description;price;count;;;
-Imported product;Description;10;25;;;
-Imp2;desc2;15;34;;;
-IMport3;description long;23;76;;;
+title,description,price,count
+Imported product,Description,10,25
+Imp2,desc2,15,34
+IMport3,description long,23,76
+im4,desc4,10,35
+im5,desc5,14,56
+im6,desc6,23,76

@@ -30,7 +30,7 @@ export const handler = async (event: any) => {
       .on("data", async (data) => {
         results.push(data);
 
-        await sqsClient
+        const response = await sqsClient
           .send(
             new SendMessageCommand({
               QueueUrl:
@@ -38,14 +38,8 @@ export const handler = async (event: any) => {
               MessageBody: JSON.stringify(data),
             })
           )
-          .then(
-            (data: SendMessageCommandOutput) => {
-              console.log(`Successfully sent message ${data}`);
-            },
-            (error: unknown) => {
-              console.log(error);
-            }
-          );
+
+          console.log(`dataaaa ${JSON.stringify(data)}`)
       })
       .on("end", () => {
         console.log(JSON.stringify(results));

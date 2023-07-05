@@ -3,6 +3,7 @@ import { HttpLambdaIntegration} from '@aws-cdk/aws-apigatewayv2-integrations-alp
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as s3notifications from 'aws-cdk-lib/aws-s3-notifications';
 import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
@@ -18,10 +19,17 @@ export class ImportServiceStack extends cdk.Stack {
 
     const bucket = s3.Bucket.fromBucketName(this, "ImportBucket", "rs-school-shop-app-products-files");
 
+    const queue = sqs.Queue.fromQueueArn(this, 'ImportFileQueue', 'arn:aws:sqs:us-east-1:585154451279:import-file-queue'); 
     const importProductsFile = new NodejsFunction(this, 'ImportProductsFileLambda', {
       ...sharedLambdaProps,
       functionName: 'importProductsFile',
-      entry: 'src/handlers/importProductsFile.ts'
+      entry: 'src/handlers/importProductsFile.ts',
+      environment: {
+        IMPORT_AWS_REGION: process.env.IMPORT_AWS_REGION!,
+        IMPORT_BUCKET_NAME: bucket.bucketName,
+        IMPORT_UPLOADED_PREFIX: process.env.IMPORT_UPLOADED_PREFIX!,
+        IMPORT_SQS_URL: queue.queueUrl, 
+      }
     });
 
     bucket.grantReadWrite(importProductsFile);
@@ -29,8 +37,15 @@ export class ImportServiceStack extends cdk.Stack {
     const importFileParser = new NodejsFunction(this, 'ImportFileParserLambda', {
       ...sharedLambdaProps,
       functionName: 'importFileParser',
-      entry: 'src/handlers/importFileParser.ts'
+      entry: 'src/handlers/importFileParser.ts',
+      environment: {
+        IMPORT_BUCKET_NAME: process.env.IMPORT_BUCKET_NAME!,
+        IMPORT_UPLOADED_PREFIX: process.env.IMPORT_UPLOADED_PREFIX!,
+        IMPORT_SQS_URL: queue.queueUrl, 
+      }
     });
+
+    queue.grantSendMessages(importFileParser);
 
     bucket.addEventNotification(
       s3.EventType.OBJECT_CREATED,
@@ -53,14 +68,6 @@ export class ImportServiceStack extends cdk.Stack {
       path: '/import',
       methods: [apiGateway.HttpMethod.GET],
     });
-
-    // api.addRoutes({
-    //   integration: new HttpLambdaIntegration('GetProductsListIntegration', getProductById),
-    //   path: '/products/{id}',
-    //   methods: [apiGateway.HttpMethod.GET],
-    // });
-
-    
   }
 }
 
